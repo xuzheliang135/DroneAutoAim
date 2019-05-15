@@ -41,8 +41,6 @@ int ArmorFinder::run(cv::Mat &src) {
             }
             break;
         case STAND_BY:
-
-            stateStandBy();
             transferState(SEARCHING_TARGET);
             break;
         default:

@@ -106,11 +106,11 @@ bool ArmorFinder::isValidLightContour(const vector <Point> &light_contour) {
 bool ArmorFinder::pipelineForFindLightBlob(cv::Mat &src_left_light,
                                            std::vector <LightBlob> &light_blobs_real_left) {
     pipelineLightBlobPreprocess(src_left_light);
-    preprocessColor(src_left_); //腐蚀，膨胀
-    resize(src_left_, src_left_, Size(640, 480));
+    preprocessColor(src_); //腐蚀，膨胀
+    resize(src_, src_, Size(640, 480));
     clear_light_blobs_vector();
     findLightBlob(src_left_light, light_blobs_left_light_);
-    findLightBlob(src_left_, light_blobs_left_color_);
+    findLightBlob(src_, light_blobs_left_color_);
     judge_light_color(light_blobs_left_light_, light_blobs_left_color_, light_blobs_real_left);
     return !(light_blobs_real_left.empty());
 }

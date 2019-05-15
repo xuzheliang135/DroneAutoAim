@@ -7,28 +7,23 @@ using std::endl;
 using std::vector;
 
 
-ArmorFinder::ArmorFinder(std::string path) :
+ArmorFinder::ArmorFinder(const std::string &path) :
         kcf_tracker_(false, true, false, false),
         uart_(),
         src_blue0(240, 320, CV_8UC1),
         src_red0(240, 320, CV_8UC1),
-        classifier(std::move(path)) {
+        classifier(path) {
     initLightParam();
     initLightCoupleParam();
     initCameraParam();
     initArmorSeekingParam();
-    initArmorPredictParam();
     initStateMachineParam();
-    initCalibrateParam();
     initTrackingParam();
 
     cur_state_ = SEARCHING_TARGET;
     target_found_frame_cnt = 0;
-    target_unfound_frame_cnt = 0;
-
     enemy_color_ = ENEMY_RED;
     total_contour_area_left_ = 0;
-
     position_diff = 0;
 }
 

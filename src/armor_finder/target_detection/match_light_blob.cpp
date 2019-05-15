@@ -131,5 +131,3 @@ bool ArmorFinder::isCoupleLight(const LightBlob &light_blob_i, const LightBlob &
            oldAngelJudge(light_blob_i, light_blob_j);
 //    return oldAngelJudge(light_blob_i, light_blob_j);
 }
-
-

@@ -3,16 +3,16 @@
 
 using namespace cv;
 
-void ArmorFinder::showImage(std::string windows_name, const cv::Mat &src_left) {
+void ArmorFinder::showImage(std::string windows_name, const cv::Mat &src) {
     static Mat image2show_left;
 
-    if (src_left.type() == CV_8UC1) // 黑白图像
+    if (src.type() == CV_8UC1) // 黑白图像
     {
-        cvtColor(src_left, image2show_left, COLOR_GRAY2RGB);
+        cvtColor(src, image2show_left, COLOR_GRAY2RGB);
 
-    } else if (src_left.type() == CV_8UC3) //RGB 彩色
+    } else if (src.type() == CV_8UC3) //RGB 彩色
     {
-        image2show_left = src_left.clone();
+        image2show_left = src.clone();
 
     }
     imshow(windows_name, image2show_left);
@@ -54,15 +54,15 @@ void ArmorFinder::showArmorBox(std::string windows_name,
 }
 
 void ArmorFinder::showContours(std::string windows_name,
-                               const cv::Mat &src_left, const std::vector <LightBlob> &light_blobs_left) {
+                               const cv::Mat &src, const std::vector<LightBlob> &light_blobs_left) {
     static Mat image2show_left;
 
-    if (src_left.type() == CV_8UC1) // 黑白图像
+    if (src.type() == CV_8UC1) // 黑白图像
     {
-        cvtColor(src_left, image2show_left, COLOR_GRAY2RGB);
-    } else if (src_left.type() == CV_8UC3) //RGB 彩色
+        cvtColor(src, image2show_left, COLOR_GRAY2RGB);
+    } else if (src.type() == CV_8UC3) //RGB 彩色
     {
-        image2show_left = src_left.clone();
+        image2show_left = src.clone();
     }
 
     for (const auto &light_blob:light_blobs_left) {

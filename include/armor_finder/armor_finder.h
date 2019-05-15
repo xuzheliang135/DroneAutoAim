@@ -29,12 +29,12 @@ using std::vector;
  */
 class ArmorFinder {
 public:
-    ArmorFinder(std::string path);
+    explicit ArmorFinder(const std::string &path);
 
     ~ArmorFinder() = default;
 
-    cv::Mat src_left_;
-    cv::Mat src_blue0, src_red0, src_blue1, src_red1;
+    cv::Mat src_;
+    cv::Mat src_blue0, src_red0;
     cv::Mat src_raw_;
 
     /**
@@ -46,21 +46,18 @@ public:
     int run(cv::Mat &src);
 
 public:
-    // for debug or recording
-    cv::Mat frame_to_display;
     Classifier classifier;
 private:
     /**
      * parameter structures, defined in param_struct_define.h
      */
-    LightBlobParam light_blob_param_;
-    LightCoupleParam light_couple_param_;
-    StereoCameraPara stereo_camera_param_;
-    ArmorSeekingParam armor_seeking_param_;
-    ArmorPridictParam armor_predict_param_;
-    StateMachineParam state_machine_param_;
-    CalibrateParam calibrate_param_;
-    TrackingParam track_param_;
+    LightBlobParam light_blob_param_{};
+    LightCoupleParam light_couple_param_{};
+    StereoCameraPara stereo_camera_param_{};
+    ArmorSeekingParam armor_seeking_param_{};
+    ArmorPridictParam armor_predict_param_{};
+    StateMachineParam state_machine_param_{};
+    TrackingParam track_param_{};
 
     /**
      * vectors to store light blobs
@@ -68,7 +65,6 @@ private:
     std::vector <LightBlob> light_blobs_left_light_;
     std::vector <LightBlob> light_blobs_left_color_;
     std::vector <LightBlob> light_blobs_real_;
-    std::vector<int> armor_num_left, armor_num_right;
 
     /**
      * Rects to store the found armor box position
@@ -83,7 +79,7 @@ private:
     /**
      * a counter for changing state from searching to tracking
      */
-    int target_found_frame_cnt, target_unfound_frame_cnt;
+    int target_found_frame_cnt;
 
     /**
      * Finite state machine that switch between searching and tracking
@@ -98,7 +94,7 @@ private:
     /**
      * A well functioned class for tracking
      */
-    KCFTracker kcf_tracker_, kcf_tracker_right_;
+    KCFTracker kcf_tracker_;
 
     /**
      * enemy color define by two constant, defined in constant.h
@@ -114,10 +110,6 @@ private:
      * about armor space positions
      */
     cv::Point3d armor_space_position_;
-    cv::Point3d armor_space_last_position_;
-    std::vector <cv::Point3d> armor_history_positions_;
-    cv::Point3d armor_predicted_position_;
-
     /**
      * variable to store the position difference between current and last
      */
@@ -127,19 +119,10 @@ private:
 public:
     void setEnemyColor(int color);
 
-    /**
-     * @brief calibrate the camera, the parameter files should be in extra_files/camera_calibration_parameter/
-     * @param src_left : inoutput
-     * @param src_right : inoutput
-     */
-    void calibrate(cv::Mat &src_left, cv::Mat &src_right);
-
 private:
     /**
      * initialize parameters, the definition should be in their related module respectively
      */
-    void initCalibrateParam();
-
     void initLightParam();
 
     void initLightCoupleParam();
@@ -150,8 +133,6 @@ private:
 
     void initArmorPredictParam();
 
-    void initUartParam();
-
     void initStateMachineParam();
 
     void initTrackingParam();
@@ -161,12 +142,6 @@ private:
      * @param state
      */
     void transferState(StateMachine state);
-
-    /**
-     * @brief a not used state
-     * @return
-     */
-    bool stateStandBy();
 
     /**
      * @brief searching state, it will search the entire frame to try to find a target
@@ -194,10 +169,10 @@ private:
 
     /**
      * @brief some preprocess of image, make image from camera and video file the same.
-     * @param src_left
+     * @param src_input
      * @param src_right
      */
-    void imagePreprocess(cv::Mat &src_left);
+    void imagePreprocess(cv::Mat &src_input);
 
     /**
      * @brief find light blobs from the images.
@@ -214,13 +189,6 @@ private:
      * @param InOutput
      */
     void pipelineLightBlobPreprocess(cv::Mat &InOutput);
-
-    /**
-     * @brief untested function, to recoginize the digit on the armor
-     * @param image
-     * @return
-     */
-    int recognize_digits(cv::Mat &image);
 
     /**
      * @brief control the message stream to lower computer in searching state, some large jump will be skipped
@@ -276,18 +244,6 @@ public:
      */
     bool matchLightBlobVector(std::vector <LightBlob> &light_blobs, vector <cv::Rect2d> &armor_box);
 
-
-public:
-    /**
-     * @brief still untested
-     * @param armor_history_position
-     * @param armor_predicted_position
-     * @return
-     */
-    bool predictArmorPosition(
-            cv::Point3d &armor_history_position, cv::Point3d &armor_predicted_position);
-
-
 public:
     /**
      * @brief send target position to lower computer by uart
@@ -322,13 +278,13 @@ public:
     /**
      * @brief all those show*** functions are used to display the images with found light blobs or armor rect.
      * @param windows_name
-     * @param src_left
+     * @param src
      * @param src1
      */
-    void showImage(std::string windows_name, const cv::Mat &src_left);
+    void showImage(std::string windows_name, const cv::Mat &src);
 
-    void
-    showContours(std::string windows_name, const cv::Mat &src_left, const std::vector <LightBlob> &light_blobs_left);
+    void showContours(std::string windows_name,
+                      const cv::Mat &src, const std::vector<LightBlob> &light_blobs_left);
 
 
     void showArmorBox(std::string windows_name, const cv::Mat &src_left, const cv::Rect2d &armor_box_left);

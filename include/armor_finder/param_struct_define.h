@@ -80,12 +80,6 @@ enum StateMachine {
 
 struct StateMachineParam {
     int THRESHOLD_FOUND_SEARCHING_TO_TRACKING;
-    int THRESHOLD_UNFOUND_TRACKING_TO_SEARCHING;
-};
-
-struct CalibrateParam {
-    bool isAvailable;
-    cv::Mat map11, map12, map21, map22;
 };
 
 struct TrackingParam {
