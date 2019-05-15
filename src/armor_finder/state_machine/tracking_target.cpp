@@ -11,44 +11,37 @@ void ArmorFinder::initTrackingParam() {
 
 }
 
-
-bool ArmorFinder::stateTrackingTarget(cv::Mat &src_left) {
+bool ArmorFinder::stateTrackingTarget(cv::Mat &src) {
     static int pictureCount = 0;
+    cv::Mat roi = src(armor_box_).clone();
     if (pictureCount++ > 20) {
-        cv::Mat roi = src_left(armor_box_left_).clone();
-        cv::resize(roi, roi, cv::Size(48, 36));
-        cv::cvtColor(roi, roi, CV_BayerGR2BGR);
-        if (classifier(roi) == 0) {
-            pictureCount = 0;
-            return false;
-        }
         pictureCount = 0;
+        cv::cvtColor(roi, roi, CV_BayerGR2BGR);
+        int res = classifier(roi);
+        if (res == 0) return false;
     }
     /********************** tracking ***********************************************/
-    track(kcf_tracker_left_, src_left, armor_box_left_);
-    if ((Rect2d(0, 0, 640, 480) & armor_box_left_).area() < armor_box_left_.area()) // avoid box touching edges
+    track(kcf_tracker_, src, armor_box_);
+    if ((Rect2d(0, 0, 640, 480) & armor_box_).area() < armor_box_.area()) // avoid box touching edges
     {
         pictureCount = 0;
         return false;
     }
 
-    Mat roi_left = src_left.clone()(armor_box_left_);
-    threshold(roi_left, roi_left, track_param_.THRESHOLD_FOR_COUNT_NON_ZERO, 255, THRESH_BINARY);
+    threshold(roi, roi, track_param_.THRESHOLD_FOR_COUNT_NON_ZERO, 255, THRESH_BINARY);
 
-    if (abs(countNonZero(roi_left) - total_contour_area_left_) >=
+    if (abs(countNonZero(roi) - total_contour_area_left_) >=
         track_param_.TRANSFER_RATIO_OF_TRACKING_AREA_NONZERO * total_contour_area_left_) {
         pictureCount = 0;
         return false;
     }
-#ifdef DEBUG
-    showArmorBox("tracking boxes", src_left, armor_box_left_);
-#endif
+    LOG_DEBUG(showArmorBox("tracking boxes", src, armor_box_));
     /********************** convert to angel *********************************/
     armor_space_position_.x =
-            (armor_box_left_.x + armor_box_left_.width / 2 - 640 / 2);
-    armor_space_position_.y = -(armor_box_left_.y + armor_box_left_.height / 2 - 480 / 2);
+            (armor_box_.x + armor_box_.width / 2 - 640.0 / 2);
+    armor_space_position_.y = -(armor_box_.y + armor_box_.height / 2 - 480.0 / 2);
     /*************** a predict function for moving target with only constant speed *******************/
-    targetTrackPositionStreamControl(armor_space_position_);
+    targetTrackPositionStreamControl(armor_space_position_);//todo:may need to be deleted
 
     /********************** send it by uart and adjust the original point to the center *************/
     return sendTargetByUart(

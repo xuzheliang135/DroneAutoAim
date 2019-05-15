@@ -1,6 +1,7 @@
 #include <classifier/classifier.h>
 #include <cstdio>
 #include <iostream>
+#include <opencv/cv.hpp>
 
 
 vector <vector<MatrixXd>> Classifier::load_conv_w(const string &file) {
@@ -250,10 +251,6 @@ Classifier::Classifier(const string &folder) : state(true) {
     fc2_b = load_fc_b(folder + "fc2_b");
 }
 
-//#define PRINT_MAT(name) (cout << #name":\n" << name << endl)
-//#define PRINT_MULTI_MAT(name) (cout << #name":\n" << name[0][0] << endl)
-//#define PRINT_MAT_SHAPE(name) LOGM(#name":(%d, %d)", name.rows(), name.cols())
-//#define PRINT_MULTI_MAT_SHAPE(name) LOGM(#name":(%d, %d)", name[0][0].rows(), name[0][0].cols())
 
 MatrixXd Classifier::calculate(const vector <vector<MatrixXd>> &input) {
     vector <vector<MatrixXd>> conv1_result = relu(apply_bias(conv2(conv1_w, input), conv1_b));
@@ -277,6 +274,8 @@ Classifier::operator bool() const {
 int Classifier::operator()(const cv::Mat &image) {
     MatrixXd r, g, b;
     std::vector <cv::Mat> channels;
+    if (image.empty())return 0;//todo another method to determine what to return
+    cv::resize(image, image, cv::Size(48, 36));
     cv::split(image, channels);
     cv2eigen(channels[0], b);
     cv2eigen(channels[1], g);

@@ -60,24 +60,6 @@ public:
      */
     bool readRaw(cv::Mat &src0);
 
-    /**
-     * @brief read the image with process, it is three channels color image, but it is slower.
-     * @param src0
-     * @param src1
-     * @return
-     */
-    bool readProcessed(cv::Mat &src0, cv::Mat &src1);
-
-    /**
-     * @brief try to read the camera image in two thread, (but it seems that the reading is already implemented in thread.)
-     * @param src0
-     * @param src1
-     * @return
-     */
-    bool read_thread(cv::Mat &src0, cv::Mat &src1);
-
-    void read_camera_thread0(cv::Mat &src);
-
 };
 
 

@@ -3,7 +3,7 @@
 //
 
 #include <uart/uart.h>
-
+#include "config.h"
 using std::cout;
 using std::cerr;
 using std::clog;
@@ -122,7 +122,7 @@ int Uart::set_opt(int fd, int nSpeed, int nBits, char nEvent, int nStop) {
 }
 
 void Uart::sendTarget(float x, float y, float z) {
-    //std::cout<<x<<" "<<y<<" "<<z<<endl;
+    LOG_INFO(std::cout < "sendTarget: " << < x << " " << y << " " << z << std::endl);
     static short x_tmp, y_tmp, z_tmp;
 
     countFPS();

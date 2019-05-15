@@ -8,7 +8,7 @@ using std::vector;
 
 
 ArmorFinder::ArmorFinder(std::string path) :
-        kcf_tracker_left_(false, true, false, false),
+        kcf_tracker_(false, true, false, false),
         uart_(),
         src_blue0(240, 320, CV_8UC1),
         src_red0(240, 320, CV_8UC1),
@@ -18,7 +18,6 @@ ArmorFinder::ArmorFinder(std::string path) :
     initCameraParam();
     initArmorSeekingParam();
     initArmorPredictParam();
-    initUartParam();
     initStateMachineParam();
     initCalibrateParam();
     initTrackingParam();

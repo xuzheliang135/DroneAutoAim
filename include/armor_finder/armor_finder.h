@@ -35,15 +35,15 @@ public:
 
     cv::Mat src_left_;
     cv::Mat src_blue0, src_red0, src_blue1, src_red1;
-    cv::Mat src_raw_left_;
+    cv::Mat src_raw_;
 
     /**
      * @brief the interface of armor_finder
-     * @param src_left : input
+     * @param src : input
      * @param src_right : input
      * @return : bool value: whether it success.
      */
-    int run(cv::Mat &src_left);
+    int run(cv::Mat &src);
 
 public:
     // for debug or recording
@@ -67,18 +67,18 @@ private:
      */
     std::vector <LightBlob> light_blobs_left_light_;
     std::vector <LightBlob> light_blobs_left_color_;
-    std::vector <LightBlob> light_blobs_left_real_;
+    std::vector <LightBlob> light_blobs_real_;
     std::vector<int> armor_num_left, armor_num_right;
 
     /**
      * Rects to store the found armor box position
      */
-    cv::Rect2d armor_box_left_;
+    cv::Rect2d armor_box_;
 
     /**
      * Rects list to store all the possible armor box position
      */
-    std::vector <cv::Rect2d> armor_boxes_left_;
+    std::vector <cv::Rect2d> armor_boxes_;
 
     /**
      * a counter for changing state from searching to tracking
@@ -98,7 +98,7 @@ private:
     /**
      * A well functioned class for tracking
      */
-    KCFTracker kcf_tracker_left_, kcf_tracker_right_;
+    KCFTracker kcf_tracker_, kcf_tracker_right_;
 
     /**
      * enemy color define by two constant, defined in constant.h
@@ -170,19 +170,19 @@ private:
 
     /**
      * @brief searching state, it will search the entire frame to try to find a target
-     * @param src_left
+     * @param src_light
      * @param src_right
      * @return
      */
-    bool stateSearchingTarget(cv::Mat &src_left);
+    bool stateSearchingTarget(cv::Mat &src_light);
 
     /**
      * @brief tracking state, it will tracking the given area until the condition is not met
-     * @param src_left
+     * @param src
      * @param src_right
      * @return
      */
-    bool stateTrackingTarget(cv::Mat &src_left);
+    bool stateTrackingTarget(cv::Mat &src);
 
     /**
      * @brief split the unprocessed bayer matrix into blue and red. The blue and red are only 1/4 of the raw image

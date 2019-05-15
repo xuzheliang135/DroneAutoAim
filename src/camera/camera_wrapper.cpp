@@ -21,8 +21,6 @@ bool CameraWrapper::init() {
 
     //枚举设备，并建立设备列表
     int camera_enumerate_device_status = CameraEnumerateDevice(camera_enum_list, &camera_cnts);
-    //cout<<"camera enumerate device status: "<<camera_enumerate_device_status<<endl;
-    //cout<<"camera number: "<<camera_cnts<<endl;
 
     //没有连接设备
     if (camera_cnts == 0) {
@@ -92,10 +90,7 @@ bool CameraWrapper::init() {
 
 
 bool CameraWrapper::read(cv::Mat &src0) {
-    return readRaw(
-            src0);             //suit for using bayer hacking in armor_finder to replace process, fast and it can filter red and blue.
-    //return readProcessed(src0, src1);   // processed color image, but this runs slowly, about half fps of previous one.
-    //return read_thread(src0, src1);     // read from camera using two threads, it seems of no use
+    return readRaw(src0);
 }
 
 
@@ -114,70 +109,12 @@ bool CameraWrapper::readRaw(cv::Mat &src0) {
         //在成功调用CameraGetImageBuffer后，必须调用CameraReleaseImageBuffer来释放获得的buffer。
         //否则再次调用CameraGetImageBuffer时，程序将被挂起一直阻塞，直到其他线程中调用CameraReleaseImageBuffer来释放了buffer
         CameraReleaseImageBuffer(h_camera, pby_buffer);
-
-//        double exposure_time0 = 0, exposure_time1 = 0;
-//        CameraGetExposureTime(h_camera, &exposure_time0);
-//        CameraGetExposureTime(h_camera1, &exposure_time1);
-//        cout<<"exposure time "<<exposure_time0<<" "<<exposure_time1<<endl;
-
         return true;
-    } else {
-        return false;
-    }
+    } else return false;
 }
-
-bool CameraWrapper::readProcessed(cv::Mat &src0, cv::Mat &src1) {
-    if (CameraGetImageBuffer(h_camera, &frame_info, &pby_buffer, 1000) == CAMERA_STATUS_SUCCESS) {
-        CameraImageProcess(h_camera, pby_buffer, rgb_buffer0,
-                           &frame_info);// this function is super slow, better not to use it.
-        if (iplImage) {
-            cvReleaseImageHeader(&iplImage);
-        }
-
-        iplImage = cvCreateImageHeader(cvSize(frame_info.iWidth, frame_info.iHeight), IPL_DEPTH_8U, channel);
-
-        cvSetData(iplImage, rgb_buffer0, frame_info.iWidth * channel);  //此处只是设置指针，无图像块数据拷贝，不需担心转换效率
-
-        src0 = cv::cvarrToMat(iplImage);
-
-        //在成功调用CameraGetImageBuffer后，必须调用CameraReleaseImageBuffer来释放获得的buffer。
-        //否则再次调用CameraGetImageBuffer时，程序将被挂起一直阻塞，直到其他线程中调用CameraReleaseImageBuffer来释放了buffer
-        CameraReleaseImageBuffer(h_camera, pby_buffer);
-        return true;
-    } else {
-        return false;
-    }
-}
-
 
 CameraWrapper::~CameraWrapper() {
     CameraUnInit(h_camera);
     //注意，先反初始化后再free
     free(rgb_buffer0);
 }
-
-
-void CameraWrapper::read_camera_thread0(cv::Mat &src) {
-    if (CameraGetImageBuffer(h_camera, &frame_info, &pby_buffer, 1000) == CAMERA_STATUS_SUCCESS) {
-        CameraImageProcess(h_camera, pby_buffer, rgb_buffer0, &frame_info);
-        iplImage = cvCreateImageHeader(cvSize(frame_info.iWidth, frame_info.iHeight), IPL_DEPTH_8U, channel);
-        cvSetData(iplImage, rgb_buffer0, frame_info.iWidth * channel);
-        src = cv::cvarrToMat(iplImage);
-        CameraReleaseImageBuffer(h_camera, pby_buffer);
-        read_state0 = true;
-    } else {
-        read_state0 = false;
-    }
-
-}
-
-bool CameraWrapper::read_thread(cv::Mat &src0, cv::Mat &src1) {
-    std::thread t1(&CameraWrapper::read_camera_thread0, this, std::ref(src0));
-    t1.join();
-    return read_state0;
-}
-
-
-
-
-

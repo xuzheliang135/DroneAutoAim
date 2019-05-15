@@ -4,5 +4,18 @@
 
 #ifndef SJTU_RM2019_WINTER_VERSION_CONFIG_H
 #define SJTU_RM2019_WINTER_VERSION_CONFIG_H
-//#define DEBUG
+#define DEBUG
+#define ENEMY_COLOR ENEMY_BLUE
+
+#ifdef DEBUG
+#define LOG_DEBUG(x) x
+#else
+#define LOG_DEBUG(x)
+#endif
+
+#ifdef INFO
+#define LOG_INFO(x) x
+#else
+#define LOG_INFO(x)
+#endif
 #endif //SJTU_RM2019_WINTER_VERSION_CONFIG_H
