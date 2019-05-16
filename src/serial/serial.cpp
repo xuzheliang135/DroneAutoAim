@@ -160,13 +160,6 @@ bool Serial::ReadData(unsigned char *buffer,  unsigned int length) {
 
 using namespace std;
 
-string get_uart_dev_name() {
-    FILE *ls = popen("ls /dev/ttyUSB* --color=never", "r");
-    char name[20] = {0};
-    fscanf(ls, "%s", name);
-    return name;
-}
-
 Serial::Serial(int nSpeed, char nEvent, int nBits, int nStop) :
         nSpeed(nSpeed), nEvent(nEvent), nBits(nBits), nStop(nStop) {
     if (InitPort(nSpeed, nEvent, nBits, nStop)) {
@@ -182,17 +175,10 @@ Serial::~Serial() {
 }
 
 bool Serial::InitPort(int nSpeed, char nEvent, int nBits, int nStop) {
-    string name = get_uart_dev_name();
-    if (name == "") {
+    if ((fd = open("/dev/ttyTHS2", O_RDWR)) < 0) {
         return false;
     }
-    if ((fd = open(name.data(), O_RDWR)) < 0) {
-        return false;
-    }
-    if (set_opt(fd, nSpeed, nEvent, nBits, nStop) < 0) {
-        return false;
-    }
-    return true;
+    return set_opt(fd, nSpeed, nEvent, nBits, nStop) >= 0;
 }
 
 bool Serial::WriteData(const unsigned char *pData, unsigned int length) {

@@ -28,7 +28,7 @@ void uartReceive(Serial *uart);
 
 int enemy_color = ENEMY_COLOR;
 int main() {
-    int from_camera = 0;
+    int from_camera = 1;
     bool running = true;
     Serial uart(115200);
     std::thread receive(uartReceive, &uart);
@@ -98,10 +98,10 @@ void uartReceive(Serial *uart) {
                 cnt = 0;
             }
         }
-        if (cnt == 12) {
-            if (buffer[11] == ENEMY_BLUE) {
+        if (cnt == 1) {
+            if (buffer[0] == 0) {
                 enemy_color = ENEMY_BLUE;
-            } else if (buffer[11] == ENEMY_RED) {
+            } else if (buffer[0] == 1) {
                 enemy_color = ENEMY_RED;
             }
         }

@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 
 project(sjtu_rm2019_winter_version)
 set(CMAKE_CXX_STANDARD 11)
-SET(CMAKE_BUILD_TYPE DEBUG)
-#SET(CMAKE_BUILD_TYPE RELEASE)
+#SET(CMAKE_BUILD_TYPE DEBUG)
+SET(CMAKE_BUILD_TYPE RELEASE)
 
 find_package(OpenMP)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -std=c++11 -pthread")
@@ -36,5 +36,6 @@ add_executable(run main.cpp ${sourcefiles})
 
 target_compile_options(run PRIVATE ${OpenMP_FLAGS})
 TARGET_LINK_LIBRARIES(run ${OpenCV_LIBS})
-TARGET_LINK_LIBRARIES(run .\\MVCAMSDK.LIB)
+#TARGET_LINK_LIBRARIES(run .\\MVCAMSDK.LIB)
+TARGET_LINK_LIBRARIES(run /lib/libMVSDK.so)
 TARGET_LINK_LIBRARIES(run ${OpenMP_LIBS})

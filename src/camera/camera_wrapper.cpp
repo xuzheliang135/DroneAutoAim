@@ -51,8 +51,8 @@ bool CameraWrapper::init() {
     // set resolution to 320*240
     // CameraSetImageResolution(hCamera, &(tCapability.pImageSizeDesc[2]));
 
-    rgb_buffer0 = (unsigned char *) malloc(tCapability.sResolutionRange.iHeightMax *
-                                           tCapability.sResolutionRange.iWidthMax * 3);
+    rgb_buffer = (unsigned char *) malloc(tCapability.sResolutionRange.iHeightMax *
+                                          tCapability.sResolutionRange.iWidthMax * 3);
 
     CameraSetAeState(h_camera, true);  //设置是否自动曝光
 
@@ -67,13 +67,17 @@ bool CameraWrapper::init() {
          CameraSetGamma、CameraSetConrast、CameraSetGain等设置图像伽马、对比度、RGB数字增益等等。
          CameraGetFriendlyName    CameraSetFriendlyName 获取/设置相机名称（该名称可写入相机硬件）
     */
-    double exposure_time0 = 0;
-    CameraGetExposureTime(h_camera, &exposure_time0);
-    cout << "exposure time " << exposure_time0 << endl;
+    double exposure_time = 0;
+    CameraGetExposureTime(h_camera, &exposure_time);
+    cout << "exposure time " << exposure_time << endl;
 
-    // 抗频闪
-    CameraSetAntiFlick(h_camera, true);
-
+//     抗频闪
+//    CameraSetAntiFlick(h_camera, true);
+    CameraSetAeState(h_camera, false);   // 不使用自动曝光
+    CameraSetExposureTime(h_camera, 20000);// 曝光时间20ms
+    CameraSetAnalogGain(h_camera, 64);// 模拟增益4
+    CameraSetClrTempMode(h_camera, 1);  // customize color temprature mode
+    CameraSetGain(h_camera, 170, 108, 104);  // r 170, g 108, b 104
 
     if (tCapability.sIspCapacity.bMonoSensor) {
         channel = 1;
@@ -116,5 +120,5 @@ bool CameraWrapper::readRaw(cv::Mat &src0) {
 CameraWrapper::~CameraWrapper() {
     CameraUnInit(h_camera);
     //注意，先反初始化后再free
-    free(rgb_buffer0);
+    free(rgb_buffer);
 }

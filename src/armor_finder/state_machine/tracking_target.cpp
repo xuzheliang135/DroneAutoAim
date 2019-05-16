@@ -31,8 +31,6 @@ bool ArmorFinder::stateTrackingTarget(cv::Mat &src) {
     armor_space_position_.x =
             (armor_box_.x + armor_box_.width / 2 - 640.0 / 2);
     armor_space_position_.y = -(armor_box_.y + armor_box_.height / 2 - 480.0 / 2);
-    /*************** a predict function for moving target with only constant speed *******************/
-    targetTrackPositionStreamControl(armor_space_position_);//todo:may need to be deleted
 
     /********************** send it by uart and adjust the original point to the center *************/
     return sendTargetByUart(

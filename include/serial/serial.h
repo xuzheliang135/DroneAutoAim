@@ -40,21 +40,21 @@ private:
 
 class Serial {
 private:
-    int fd;
+    int fd{};
     int nSpeed;
     char nEvent;
     int nBits;
     int nStop;
-    char buff[8];
-    int fps;
-    time_t cur_time;
+    char buff[8]{};
+    int fps{};
+    time_t cur_time{};
 
     int set_opt(int fd, int nSpeed, char nEvent, int nBits, int nStop);
 
     void countFPS();
 
 public:
-    Serial(int nSpeed = 115200, char nEvent = 'N', int nBits = 8, int nStop = 1);
+    explicit Serial(int nSpeed = 115200, char nEvent = 'N', int nBits = 8, int nStop = 1);
 
     ~Serial();
 

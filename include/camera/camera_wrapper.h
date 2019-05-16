@@ -19,19 +19,18 @@
 
 class CameraWrapper : public WrapperHead {
 private:
-    unsigned char *rgb_buffer0;
+    unsigned char *rgb_buffer{};
     int camera_cnts;
     int camera_status;
-    tSdkCameraDevInfo camera_enum_list[2];
-    int h_camera;
-    char camera_name[32];
+    tSdkCameraDevInfo camera_enum_list[2]{};
+    int h_camera{};
+    char camera_name[32]{};
 
-    tSdkCameraCapbility tCapability;
-    tSdkFrameHead frame_info;
-    BYTE *pby_buffer;
+    tSdkCameraCapbility tCapability{};
+    tSdkFrameHead frame_info{};
+    BYTE *pby_buffer{};
     IplImage *iplImage;
     int channel;
-    bool read_state0;
 
 public:
     CameraWrapper();
