@@ -62,8 +62,8 @@ private:
     /**
      * vectors to store light blobs
      */
-    std::vector <LightBlob> light_blobs_left_light_;
-    std::vector <LightBlob> light_blobs_left_color_;
+    std::vector<LightBlob> light_blobs_light_;
+    std::vector<LightBlob> light_blobs_color_;
     std::vector <LightBlob> light_blobs_real_;
 
     /**
@@ -176,13 +176,13 @@ private:
 
     /**
      * @brief find light blobs from the images.
-     * @param src_left :image
+     * @param src_light :image
      * @param src_right :image
-     * @param light_blobs_real_left
+     * @param light_blobs_real
      * @param light_blobs_real_right
      * @return
      */
-    bool pipelineForFindLightBlob(cv::Mat &src_left, std::vector <LightBlob> &light_blobs_real_left);
+    bool pipelineForFindLightBlob(cv::Mat &src_light, std::vector<LightBlob> &light_blobs_real);
 
     /**
      * @brief process for find light blobs, enlarge the difference between the dark and light, to highlight the light blob

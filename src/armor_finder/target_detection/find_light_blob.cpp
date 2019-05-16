@@ -34,9 +34,9 @@ void drawRotatedRectangle(Mat &img, const RotatedRect &rect, const Scalar &s) {
 }
 
 void ArmorFinder::clear_light_blobs_vector() {
-    light_blobs_left_light_.clear();
+    light_blobs_light_.clear();
 
-    light_blobs_left_color_.clear();
+    light_blobs_color_.clear();
 
     light_blobs_real_.clear();
 }
@@ -103,14 +103,14 @@ bool ArmorFinder::isValidLightContour(const vector <Point> &light_contour) {
              cur_contour_area < light_blob_param_.CONTOUR_AREA_MIN);
 }
 
-bool ArmorFinder::pipelineForFindLightBlob(cv::Mat &src_left_light,
-                                           std::vector <LightBlob> &light_blobs_real_left) {
-    pipelineLightBlobPreprocess(src_left_light);
+bool ArmorFinder::pipelineForFindLightBlob(cv::Mat &src_light,
+                                           std::vector<LightBlob> &light_blobs_real) {
+    pipelineLightBlobPreprocess(src_light);
     preprocessColor(src_); //腐蚀，膨胀
     resize(src_, src_, Size(640, 480));
     clear_light_blobs_vector();
-    findLightBlob(src_left_light, light_blobs_left_light_);
-    findLightBlob(src_, light_blobs_left_color_);
-    judge_light_color(light_blobs_left_light_, light_blobs_left_color_, light_blobs_real_left);
-    return !(light_blobs_real_left.empty());
+    findLightBlob(src_light, light_blobs_light_);
+    findLightBlob(src_, light_blobs_color_);
+    judge_light_color(light_blobs_light_, light_blobs_color_, light_blobs_real);
+    return !(light_blobs_real.empty());
 }
