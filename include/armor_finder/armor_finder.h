@@ -19,7 +19,6 @@
 #include <uart/uart.h>
 #include <tracker/kcftracker.hpp>
 #include "tracker/tracker.h"
-#include "classifier/classifier.h"
 
 
 using std::vector;
@@ -29,7 +28,7 @@ using std::vector;
  */
 class ArmorFinder {
 public:
-    explicit ArmorFinder(const std::string &path);
+    explicit ArmorFinder();
 
     ~ArmorFinder() = default;
 
@@ -45,8 +44,6 @@ public:
      */
     int run(cv::Mat &src);
 
-public:
-    Classifier classifier;
 private:
     /**
      * parameter structures, defined in param_struct_define.h
@@ -55,7 +52,6 @@ private:
     LightCoupleParam light_couple_param_{};
     StereoCameraPara stereo_camera_param_{};
     ArmorSeekingParam armor_seeking_param_{};
-    ArmorPridictParam armor_predict_param_{};
     StateMachineParam state_machine_param_{};
     TrackingParam track_param_{};
 

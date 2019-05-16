@@ -40,7 +40,7 @@ int main() {
             cout << "Video source initialization successfully." << endl;
         else continue;
         Mat src, src_parallel;
-        ArmorFinder armor_finder("/mnt/e/C/RoboMaster/sjtu_rm2019_winter_version-master/tools/para/");
+        ArmorFinder armor_finder;
         armor_finder.setEnemyColor(ENEMY_COLOR);
         for (int i = 0; i < 5; i++) {
             video->read(src); // to eliminate the initial noise images

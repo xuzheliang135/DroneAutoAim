@@ -7,12 +7,11 @@ using std::endl;
 using std::vector;
 
 
-ArmorFinder::ArmorFinder(const std::string &path) :
+ArmorFinder::ArmorFinder() :
         kcf_tracker_(false, true, false, false),
         uart_(),
         src_blue0(240, 320, CV_8UC1),
-        src_red0(240, 320, CV_8UC1),
-        classifier(path) {
+        src_red0(240, 320, CV_8UC1) {
     initLightParam();
     initLightCoupleParam();
     initCameraParam();

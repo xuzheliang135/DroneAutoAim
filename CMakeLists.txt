@@ -12,7 +12,6 @@ set(OpenMP_FLAGS ${OpenMP_CXX_FLAGS})
 set(OpenMP_LIBS gomp)
 set(OpenCV_DIR "/mnt/e/WSL/opencv-3.4.4/build")
 
-FIND_PACKAGE(Eigen3 REQUIRED)
 FIND_PACKAGE(OpenCV 3 REQUIRED)
 include_directories(${OpenCV_DIRS})
 
@@ -37,5 +36,5 @@ add_executable(run main.cpp ${sourcefiles})
 
 target_compile_options(run PRIVATE ${OpenMP_FLAGS})
 TARGET_LINK_LIBRARIES(run ${OpenCV_LIBS})
-TARGET_LINK_LIBRARIES(run ${PROJECT_SOURCE_DIR}/../libMVSDK.so)
+TARGET_LINK_LIBRARIES(run .\\MVCAMSDK.LIB)
 TARGET_LINK_LIBRARIES(run ${OpenMP_LIBS})

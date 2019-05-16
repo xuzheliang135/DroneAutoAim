@@ -12,19 +12,11 @@ void ArmorFinder::initTrackingParam() {
 }
 
 bool ArmorFinder::stateTrackingTarget(cv::Mat &src) {
-    static int pictureCount = 0;
     cv::Mat roi = src(armor_box_).clone();
-    if (pictureCount++ > 20) {
-        pictureCount = 0;
-        cv::cvtColor(roi, roi, CV_BayerGR2BGR);
-        int res = classifier(roi);
-        if (res == 0) return false;
-    }
     /********************** tracking ***********************************************/
     track(kcf_tracker_, src, armor_box_);
     if ((Rect2d(0, 0, 640, 480) & armor_box_).area() < armor_box_.area()) // avoid box touching edges
     {
-        pictureCount = 0;
         return false;
     }
 
@@ -32,7 +24,6 @@ bool ArmorFinder::stateTrackingTarget(cv::Mat &src) {
 
     if (abs(countNonZero(roi) - total_contour_area_left_) >=
         track_param_.TRANSFER_RATIO_OF_TRACKING_AREA_NONZERO * total_contour_area_left_) {
-        pictureCount = 0;
         return false;
     }
     LOG_DEBUG(showArmorBox("tracking boxes", src, armor_box_));
