@@ -23,5 +23,4 @@ void ArmorFinder::imagePreprocess(cv::Mat &src_input) {
             src_ = src_blue0;
         }
     }
-
 }

@@ -1,5 +1,6 @@
 
 #include <armor_finder/armor_finder.h>
+#include <serial/serial.h>
 
 using namespace cv;
 using std::cout;
@@ -7,9 +8,10 @@ using std::endl;
 using std::vector;
 
 
-ArmorFinder::ArmorFinder() :
+ArmorFinder::ArmorFinder(int &color, Serial &u) :
+        uart_(u),
+        enemy_color_(color),
         kcf_tracker_(false, true, false, false),
-        uart_(),
         src_blue0(240, 320, CV_8UC1),
         src_red0(240, 320, CV_8UC1) {
     initLightParam();
@@ -24,11 +26,6 @@ ArmorFinder::ArmorFinder() :
     enemy_color_ = ENEMY_RED;
     total_contour_area_left_ = 0;
     position_diff = 0;
-}
-
-
-void ArmorFinder::setEnemyColor(int color) {
-    enemy_color_ = color;
 }
 
 void ArmorFinder::splitBayerBG(cv::Mat &src, cv::Mat &blue, cv::Mat &red) {

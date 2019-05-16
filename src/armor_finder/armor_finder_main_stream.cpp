@@ -44,7 +44,7 @@ int ArmorFinder::run(cv::Mat &src) {
             transferState(SEARCHING_TARGET);
             break;
         default:
-            cout << "incorrect state: " << cur_state_ << endl;
+            std::cout << "incorrect state: " << cur_state_ << std::endl;
     }
 
     return 0;

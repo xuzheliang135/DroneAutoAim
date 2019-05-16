@@ -16,9 +16,9 @@
 
 #include <armor_finder/param_struct_define.h>
 #include "armor_finder/constant.h"
-#include <uart/uart.h>
 #include <tracker/kcftracker.hpp>
 #include "tracker/tracker.h"
+#include "serial/serial.h"
 
 
 using std::vector;
@@ -28,7 +28,7 @@ using std::vector;
  */
 class ArmorFinder {
 public:
-    explicit ArmorFinder();
+    explicit ArmorFinder(int &color, Serial &u);
 
     ~ArmorFinder() = default;
 
@@ -85,7 +85,7 @@ private:
     /**
      * Wrapped class to send message to lower computer
      */
-    Uart uart_;
+    Serial uart_;
 
     /**
      * A well functioned class for tracking
@@ -111,9 +111,6 @@ private:
      */
     double position_diff = 0;
 
-
-public:
-    void setEnemyColor(int color);
 
 private:
     /**
