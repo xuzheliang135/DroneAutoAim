@@ -144,6 +144,8 @@ private:
      */
     bool stateSearchingTarget(cv::Mat &src_light);
 
+    bool stateQuickSearchingTarget(cv::Mat &src_color);
+
     /**
      * @brief tracking state, it will tracking the given area until the condition is not met
      * @param src

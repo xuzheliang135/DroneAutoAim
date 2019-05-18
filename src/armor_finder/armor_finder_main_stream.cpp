@@ -5,6 +5,7 @@ using namespace cv;
 
 
 int ArmorFinder::run(cv::Mat &src) {
+    static int quickSearchFrame = 0;
     src_raw_ = src.clone();
     if (src_raw_.type() == CV_8UC3) {
         cvtColor(src_raw_, src_raw_, CV_RGB2GRAY);
@@ -12,6 +13,17 @@ int ArmorFinder::run(cv::Mat &src) {
 
 
     switch (cur_state_) {
+        case QUICK_SEARCHING_TARGET:
+            if (stateQuickSearchingTarget(src)) {
+                quickSearchFrame++;
+            } else {
+                quickSearchFrame = 0;
+            }
+            if (quickSearchFrame >= 2) {
+                transferState(SEARCHING_TARGET);
+                quickSearchFrame = 0;
+            }
+            break;
         case SEARCHING_TARGET:
             if (stateSearchingTarget(src)) {
                 target_found_frame_cnt++;
@@ -22,6 +34,7 @@ int ArmorFinder::run(cv::Mat &src) {
                 if ((Rect2d(0, 0, 640, 480) & armor_box_).area() <
                     armor_box_.area()) { // avoid box touching edges
                     target_found_frame_cnt = 0;
+                    transferState(QUICK_SEARCHING_TARGET);
                     break;
                 }
                 Mat roi_left = src_raw_.clone()(armor_box_);
@@ -37,11 +50,11 @@ int ArmorFinder::run(cv::Mat &src) {
         case TRACKING_TARGET:
             if (!stateTrackingTarget(src_raw_)) {
                 LOG_INFO(std::cout << "jump out tracking" << std::endl);
-                transferState(SEARCHING_TARGET);
+                transferState(QUICK_SEARCHING_TARGET);
             }
             break;
         case STAND_BY:
-            transferState(SEARCHING_TARGET);
+            transferState(QUICK_SEARCHING_TARGET);
             break;
         default:
             std::cout << "incorrect state: " << cur_state_ << std::endl;

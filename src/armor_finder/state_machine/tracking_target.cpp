@@ -33,6 +33,7 @@ bool ArmorFinder::stateTrackingTarget(cv::Mat &src) {
     armor_space_position_.y = -(armor_box_.y + armor_box_.height / 2 - 480.0 / 2);
 
     /********************** send it by uart and adjust the original point to the center *************/
+    armor_space_position_.z = 0.0;
     return sendTargetByUart(
             static_cast<float>(armor_space_position_.x),
             static_cast<float>(armor_space_position_.y),

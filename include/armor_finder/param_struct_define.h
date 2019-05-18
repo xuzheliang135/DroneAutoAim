@@ -70,7 +70,8 @@ struct ArmorSeekingParam {
 enum StateMachine {
     STAND_BY,
     SEARCHING_TARGET,
-    TRACKING_TARGET
+    TRACKING_TARGET,
+    QUICK_SEARCHING_TARGET
 };
 
 struct StateMachineParam {
