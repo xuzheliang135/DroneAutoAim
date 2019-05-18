@@ -33,7 +33,7 @@ public:
     ~ArmorFinder() = default;
 
     cv::Mat src_;
-    cv::Mat src_blue0, src_red0;
+    cv::Mat src_blue, src_red;
     cv::Mat src_raw_;
 
     /**
@@ -95,7 +95,7 @@ private:
     /**
      * enemy color define by two constant, defined in constant.h
      */
-    int enemy_color_;
+    int &enemy_color_;
 
     /**
      * variable to determine the exit condition of tracking

@@ -1,25 +1,21 @@
 #ifndef _SERIAL_H_
 #define _SERIAL_H_
 
+
 #include "config.h"
 
 #ifdef Windows
 
-#include <Windows.h>
-
+//#include <Windows.h>
+#include <camera/camera_define.h>
+//#include <winbase.h>
 class Serial
 {
 public:
-    Serial(UINT  baud = CBR_115200, char  parity = 'N', UINT  databits = 8, UINT  stopsbits = 1, DWORD dwCommEvents = EV_RXCHAR);
+    Serial(UINT  baud = 115200, char  parity = 'N', UINT  databits = 8, UINT  stopsbits = 1, DWORD dwCommEvents = 0x1);
     ~Serial();
-
-    bool InitPort(UINT  portNo = 1, UINT  baud = CBR_9600, char  parity = 'N', UINT  databits = 8, UINT  stopsbits = 1, DWORD dwCommEvents = EV_RXCHAR);
-    UINT GetBytesInCOM() const ;
-    bool WriteData(const unsigned char* pData, unsigned int length);
-    bool ReadData(unsigned char* buffer, unsigned int length);
-private:
-    bool openPort(UINT  portNo);
-    void ClosePort();
+    void sendTarget(float x, float y, float z);
+    bool ReadData(unsigned char *buffer, unsigned int length);
 private:
     HANDLE hComm;
     UINT portNo;

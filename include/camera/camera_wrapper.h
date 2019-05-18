@@ -59,6 +59,7 @@ public:
      */
     bool readRaw(cv::Mat &src0);
 
+    bool readProcessed(cv::Mat &src);
 };
 
 

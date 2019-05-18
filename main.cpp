@@ -11,7 +11,7 @@
 #include "camera/video_wrapper.h"
 #include "camera/wrapper_head.h"
 #include "config.h"
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <thread>
 #include <ctime>
@@ -87,6 +87,8 @@ char uartReadByte(Serial &uart) {
     return byte;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
 void uartReceive(Serial *uart) {
     char buffer[100];
     int cnt = 0;
@@ -99,12 +101,14 @@ void uartReceive(Serial *uart) {
             }
         }
         if (cnt == 1) {
-            if (buffer[0] == 0) {
+            if (buffer[0] == '2') {
                 enemy_color = ENEMY_BLUE;
-            } else if (buffer[0] == 1) {
+            } else if (buffer[0] == '1') {
                 enemy_color = ENEMY_RED;
             }
         }
         cnt = 0;
     }
 }
+
+#pragma clang diagnostic pop

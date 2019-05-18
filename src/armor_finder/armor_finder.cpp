@@ -12,8 +12,8 @@ ArmorFinder::ArmorFinder(int &color, Serial &u) :
         uart_(u),
         enemy_color_(color),
         kcf_tracker_(false, true, false, false),
-        src_blue0(240, 320, CV_8UC1),
-        src_red0(240, 320, CV_8UC1) {
+        src_blue(240, 320, CV_8UC1),
+        src_red(240, 320, CV_8UC1) {
     initLightParam();
     initLightCoupleParam();
     initCameraParam();

@@ -14,6 +14,7 @@
 #define LOG_DEBUG_MSG(x) std::cout<<x<<std::endl
 #else
 #define LOG_DEBUG(x)
+#define LOG_DEBUG_MSG(x)
 #endif
 
 #ifdef INFO
