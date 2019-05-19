@@ -179,6 +179,8 @@ private:
      */
     bool pipelineForFindLightBlob(cv::Mat &src_light, std::vector<LightBlob> &light_blobs_real);
 
+    bool pipelineForFindLightBlobForQuickSearch(cv::Mat &src_light,
+                                                std::vector<LightBlob> &light_blobs_real);
     /**
      * @brief process for find light blobs, enlarge the difference between the dark and light, to highlight the light blob
      * @param InOutput

@@ -114,3 +114,13 @@ bool ArmorFinder::pipelineForFindLightBlob(cv::Mat &src_light,
     judge_light_color(light_blobs_light_, light_blobs_color_, light_blobs_real);
     return !(light_blobs_real.empty());
 }
+
+bool ArmorFinder::pipelineForFindLightBlobForQuickSearch(cv::Mat &src_light,
+                                                         std::vector<LightBlob> &light_blobs_real) {
+    preprocessColor(src_); //腐蚀，膨胀
+    resize(src_, src_, Size(640, 480));
+    clear_light_blobs_vector();
+    findLightBlob(src_, light_blobs_color_);
+    light_blobs_real.insert(light_blobs_real.end(), light_blobs_color_.begin(), light_blobs_color_.end());
+    return !(light_blobs_real.empty());
+}
