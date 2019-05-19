@@ -58,7 +58,10 @@ int main() {
 #pragma omp section
                 { ok = video->read(src); }
 #pragma omp section
-                { armor_finder.run(src_parallel); }
+                {
+                    if (enemy_color == ENEMY_BLUE)armor_finder.run_blue(src_parallel);
+                    else armor_finder.run_red(src_parallel);
+                }
             }
 #pragma omp barrier
 
@@ -68,7 +71,10 @@ int main() {
 #pragma omp section
                 { ok = video->read(src_parallel); }
 #pragma omp section
-                { armor_finder.run(src); }
+                {
+                    if (enemy_color == ENEMY_BLUE)armor_finder.run_blue(src);
+                    else armor_finder.run_red(src);
+                }
             }
 #pragma omp barrier
             LOG_DEBUG(
@@ -82,7 +88,7 @@ int main() {
 
 char uartReadByte(Serial &uart) {
     char byte;
-    if (uart.ReadData((uint8_t *) &byte, 1) == false) {
+    if (!uart.ReadData((uint8_t *) &byte, 1)) {
     }
     return byte;
 }

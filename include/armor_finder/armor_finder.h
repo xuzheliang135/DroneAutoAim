@@ -42,7 +42,9 @@ public:
      * @param src_right : input
      * @return : bool value: whether it success.
      */
-    int run(cv::Mat &src);
+    int run_red(cv::Mat &src);
+
+    int run_blue(cv::Mat &src);
 
 private:
     /**
