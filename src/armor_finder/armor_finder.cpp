@@ -8,12 +8,9 @@ using std::endl;
 using std::vector;
 
 
-ArmorFinder::ArmorFinder(int &color, Serial &u) :
+ArmorFinder::ArmorFinder(Serial &u) :
         uart_(u),
-        enemy_color_(color),
-        kcf_tracker_(false, true, false, false),
-        src_blue(240, 320, CV_8UC1),
-        src_red(240, 320, CV_8UC1) {
+        kcf_tracker_(false, true, false, false) {
     initLightParam();
     initLightCoupleParam();
     initCameraParam();
@@ -23,24 +20,7 @@ ArmorFinder::ArmorFinder(int &color, Serial &u) :
 
     cur_state_ = SEARCHING_TARGET;
     target_found_frame_cnt = 0;
-    enemy_color_ = ENEMY_RED;
     total_contour_area_left_ = 0;
     position_diff = 0;
 }
 
-void ArmorFinder::splitBayerBG(cv::Mat &src, cv::Mat &blue, cv::Mat &red) {
-    uchar *data;
-    uchar *bayer_data[2];
-    for (int i = 0; i < src.rows; ++i) {
-        data = src.ptr<uchar>(i);
-        bayer_data[0] = blue.ptr<uchar>(i / 2);
-        for (int j = 0; j < blue.cols; ++j, data += 2) {
-            bayer_data[0][j] = *data;
-        }
-        data = src.ptr<uchar>(++i) + 1;
-        bayer_data[1] = red.ptr<uchar>(i / 2);
-        for (int j = 0; j < red.cols; ++j, data += 2) {
-            bayer_data[1][j] = *data;
-        }
-    }
-}

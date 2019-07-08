@@ -5,9 +5,8 @@
 #ifndef SJTU_RM2019_WINTER_VERSION_CONFIG_H
 #define SJTU_RM2019_WINTER_VERSION_CONFIG_H
 #define DEBUG
-//#define Windows
-#define Linux
-#define ENEMY_COLOR ENEMY_BLUE
+#define Windows
+//#define Linux
 
 #ifdef DEBUG
 #define LOG_DEBUG(x) x

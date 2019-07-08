@@ -34,7 +34,4 @@ add_executable(run main.cpp ${sourcefiles})
 
 target_compile_options(run PRIVATE ${OpenMP_FLAGS})
 TARGET_LINK_LIBRARIES(run ${OpenCV_LIBS})
-#TARGET_LINK_LIBRARIES(run_red "E:\\C\\RoboMaster\\sjtu_rm2019_winter_version-master\\MVCAMSDK_x64.dll")
-#TARGET_LINK_LIBRARIES(run "E:\\C\\RoboMaster\\sjtu_rm2019_winter_version-master\\MVCAMSDK_X64.lib")
-TARGET_LINK_LIBRARIES(run /lib/libMVSDK.so)
 TARGET_LINK_LIBRARIES(run ${OpenMP_LIBS})

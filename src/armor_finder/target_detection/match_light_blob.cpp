@@ -125,7 +125,6 @@ bool lengthRatioJudge(const LightBlob &light_blob_i, const LightBlob &light_blob
 }
 
 bool ArmorFinder::isCoupleLight(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
-    if (enemy_color_ == ENEMY_RED)return heightJudge(light_blob_i, light_blob_j);
     return lengthRatioJudge(light_blob_i, light_blob_j) &&
            lengthJudge(light_blob_i, light_blob_j) &&
            heightJudge(light_blob_i, light_blob_j) &&

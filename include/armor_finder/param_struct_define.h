@@ -63,7 +63,6 @@ struct StereoCameraPara {
 struct ArmorSeekingParam {
     int BORDER_IGNORE;
     int BOX_EXTRA;
-
 };
 
 

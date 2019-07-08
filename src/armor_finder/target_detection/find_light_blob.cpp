@@ -33,28 +33,6 @@ void drawRotatedRectangle(Mat &img, const RotatedRect &rect, const Scalar &s) {
     line(img, points[3], points[0], s);
 }
 
-void ArmorFinder::clear_light_blobs_vector() {
-    light_blobs_light_.clear();
-
-    light_blobs_color_.clear();
-
-    light_blobs_real_.clear();
-}
-
-void judge_light_color(vector <LightBlob> &light, vector <LightBlob> &color, vector <LightBlob> &result) {
-    for (auto &i:color) {
-        for (auto &j:light) {
-            Rect2d a = i.rect.boundingRect2f();
-            Rect2d b = j.rect.boundingRect2f();
-            Rect2d ab = a & b;
-            if (ab.area() / min(a.area(), b.area()) >= 0.2) {
-                result.emplace_back(j);
-                break;
-            }
-        }
-    }
-}
-
 void preprocessColor(cv::Mat &src_left) {
     static Mat kernel_erode = getStructuringElement(MORPH_RECT, Size(1, 4));
     erode(src_left, src_left, kernel_erode);
@@ -66,24 +44,6 @@ void preprocessColor(cv::Mat &src_left) {
     erode(src_left, src_left, kernel_erode2);
 
     static Mat kernel_dilate2 = getStructuringElement(MORPH_RECT, Size(3, 6));
-    dilate(src_left, src_left, kernel_dilate2);
-
-    float alpha = 1.5;
-    int beta = 0;
-    src_left.convertTo(src_left, -1, alpha, beta);
-}
-
-void preprocessColorForRed(cv::Mat &src_left) {
-    static Mat kernel_erode = getStructuringElement(MORPH_RECT, Size(1, 4));
-    erode(src_left, src_left, kernel_erode);
-
-    static Mat kernel_dilate = getStructuringElement(MORPH_RECT, Size(2, 4));
-    dilate(src_left, src_left, kernel_dilate);
-
-    static Mat kernel_erode2 = getStructuringElement(MORPH_RECT, Size(2, 4));
-    erode(src_left, src_left, kernel_erode2);
-
-    static Mat kernel_dilate2 = getStructuringElement(MORPH_RECT, Size(6, 8));
     dilate(src_left, src_left, kernel_dilate2);
 
     float alpha = 1.5;
@@ -121,25 +81,12 @@ bool ArmorFinder::isValidLightContour(const vector <Point> &light_contour) {
              cur_contour_area < light_blob_param_.CONTOUR_AREA_MIN);
 }
 
-bool ArmorFinder::pipelineForFindLightBlob(cv::Mat &src_light,
-                                           std::vector<LightBlob> &light_blobs_real) {
-    pipelineLightBlobPreprocess(src_light);
-    if (enemy_color_ == ENEMY_RED)preprocessColorForRed(src_);
-    else preprocessColor(src_); //腐蚀，膨胀
-    resize(src_, src_, Size(640, 480));
-    clear_light_blobs_vector();
-    findLightBlob(src_light, light_blobs_light_);
-    findLightBlob(src_, light_blobs_color_);
-    judge_light_color(light_blobs_light_, light_blobs_color_, light_blobs_real);
-    return !(light_blobs_real.empty());
-}
-
-bool ArmorFinder::pipelineForFindLightBlobForQuickSearch(cv::Mat &src_light,
-                                                         std::vector<LightBlob> &light_blobs_real) {
-    preprocessColor(src_); //腐蚀，膨胀
-    resize(src_, src_, Size(640, 480));
-    clear_light_blobs_vector();
-    findLightBlob(src_, light_blobs_color_);
-    light_blobs_real.insert(light_blobs_real.end(), light_blobs_color_.begin(), light_blobs_color_.end());
-    return !(light_blobs_real.empty());
+bool ArmorFinder::pipelineForFindLightBlob(cv::Mat &src,
+                                           std::vector<LightBlob> &light_blobs) {
+    light_blobs.clear();
+    pipelineLightBlobPreprocess(src);
+    preprocessColor(src); //腐蚀，膨胀
+    resize(src, src, Size(640, 480));
+    findLightBlob(src, light_blobs);
+    return !(light_blobs.empty());
 }

@@ -28,13 +28,9 @@ using std::vector;
  */
 class ArmorFinder {
 public:
-    explicit ArmorFinder(int &color, Serial &u);
+    explicit ArmorFinder(Serial &u);
 
     ~ArmorFinder() = default;
-
-    cv::Mat src_;
-    cv::Mat src_blue, src_red;
-    cv::Mat src_raw_;
 
     /**
      * @brief the interface of armor_finder
@@ -42,9 +38,8 @@ public:
      * @param src_right : input
      * @return : bool value: whether it success.
      */
-    int run_red(cv::Mat &src);
 
-    int run_blue(cv::Mat &src);
+    int run(cv::Mat &src);
 
 private:
     /**
@@ -60,8 +55,6 @@ private:
     /**
      * vectors to store light blobs
      */
-    std::vector<LightBlob> light_blobs_light_;
-    std::vector<LightBlob> light_blobs_color_;
     std::vector <LightBlob> light_blobs_real_;
 
     /**
@@ -95,11 +88,6 @@ private:
     KCFTracker kcf_tracker_;
 
     /**
-     * enemy color define by two constant, defined in constant.h
-     */
-    int &enemy_color_;
-
-    /**
      * variable to determine the exit condition of tracking
      */
     double total_contour_area_left_;
@@ -126,8 +114,6 @@ private:
 
     void initArmorSeekingParam();
 
-    void initArmorPredictParam();
-
     void initStateMachineParam();
 
     void initTrackingParam();
@@ -146,8 +132,6 @@ private:
      */
     bool stateSearchingTarget(cv::Mat &src_light);
 
-    bool stateQuickSearchingTarget(cv::Mat &src_color);
-
     /**
      * @brief tracking state, it will tracking the given area until the condition is not met
      * @param src
@@ -157,32 +141,15 @@ private:
     bool stateTrackingTarget(cv::Mat &src);
 
     /**
-     * @brief split the unprocessed bayer matrix into blue and red. The blue and red are only 1/4 of the raw image
-     * @param src : raw bayer matrix 640*480
-     * @param blue : blue part 320*240
-     * @param red : red part 320*240
-     */
-    void splitBayerBG(cv::Mat &src, cv::Mat &blue, cv::Mat &red);
-
-    /**
-     * @brief some preprocess of image, make image from camera and video file the same.
-     * @param src_input
-     * @param src_right
-     */
-    void imagePreprocess(cv::Mat &src_input);
-
-    /**
      * @brief find light blobs from the images.
-     * @param src_light :image
+     * @param src :image
      * @param src_right :image
      * @param light_blobs_real
      * @param light_blobs_real_right
      * @return
      */
-    bool pipelineForFindLightBlob(cv::Mat &src_light, std::vector<LightBlob> &light_blobs_real);
+    bool pipelineForFindLightBlob(cv::Mat &src, std::vector<LightBlob> &light_blobs_real);
 
-    bool pipelineForFindLightBlobForQuickSearch(cv::Mat &src_light,
-                                                std::vector<LightBlob> &light_blobs_real);
     /**
      * @brief process for find light blobs, enlarge the difference between the dark and light, to highlight the light blob
      * @param InOutput
@@ -196,32 +163,6 @@ private:
      * @return
      */
     bool targetSearchPositionStreamControlWillSkip(double x, double y);
-
-    /**
-     * @brief control the message stream to lower computer in tracking state, we can do some prediction in tracking,
-     *          because in tracking state the target almost moves smoothly
-     * @param armor_position
-     * @return
-     */
-    bool targetTrackPositionStreamControl(cv::Point3d &armor_position);
-
-public:
-    /**
-     * @brief When there are many possible armors, it matches the most possible pair
-     * @param armor_box_list_left
-     * @param armor_box_list_right
-     * @param armor_box_left
-     * @param armor_box_right
-     * @return
-     */
-
-public:
-
-    /**
-     * a function to clear all vector for searching
-     */
-    void clear_light_blobs_vector();
-
 
 public:
     /**
