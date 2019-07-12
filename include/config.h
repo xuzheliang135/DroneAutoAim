@@ -4,6 +4,7 @@
 
 #ifndef SJTU_RM2019_WINTER_VERSION_CONFIG_H
 #define SJTU_RM2019_WINTER_VERSION_CONFIG_H
+#define ASSEMBLE_DEPTH 3
 #define DEBUG
 #define Windows
 //#define Linux

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project(sjtu_rm2019_winter_version)
+project(DroneAutoAim)
 set(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_BUILD_TYPE DEBUG)
 #SET(CMAKE_BUILD_TYPE RELEASE)

@@ -12,7 +12,7 @@ void ArmorFinder::initTrackingParam() {
 }
 
 bool ArmorFinder::stateTrackingTarget(cv::Mat &src) {
-    cv::Mat roi = src(armor_box_).clone();
+    cv::Mat roi = src(armor_box_);
     /********************** tracking ***********************************************/
     track(kcf_tracker_, src, armor_box_);
     if ((Rect2d(0, 0, 640, 480) & armor_box_).area() < armor_box_.area()) // avoid box touching edges

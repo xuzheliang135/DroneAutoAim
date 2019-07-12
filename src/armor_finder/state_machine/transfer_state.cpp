@@ -9,5 +9,4 @@ void ArmorFinder::initStateMachineParam() {
 void ArmorFinder::transferState(StateMachine state) {
     cur_state_ = state;
     target_found_frame_cnt = 0;
-
 }

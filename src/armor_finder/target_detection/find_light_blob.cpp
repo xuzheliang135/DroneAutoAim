@@ -19,13 +19,6 @@ void ArmorFinder::initLightParam() {
 }
 
 
-void ArmorFinder::pipelineLightBlobPreprocess(Mat &src) {
-    src -= light_blob_param_.PREPROCESS_SUBSTRACT_FACTOR;
-    src *= light_blob_param_.PREPROCESS_MULTIPLY_FACTOR;
-    src -= light_blob_param_.PREPROCESS_SUBSTRACT_FACTOR;
-    src *= light_blob_param_.PREPROCESS_MULTIPLY_FACTOR;
-}
-
 void drawRotatedRectangle(Mat &img, const RotatedRect &rect, const Scalar &s) {
     Point2f points[4];
     rect.points(points);
@@ -33,36 +26,13 @@ void drawRotatedRectangle(Mat &img, const RotatedRect &rect, const Scalar &s) {
     line(img, points[3], points[0], s);
 }
 
-void preprocessColor(cv::Mat &src_left) {
-    static Mat kernel_erode = getStructuringElement(MORPH_RECT, Size(1, 4));
-    erode(src_left, src_left, kernel_erode);
-
-    static Mat kernel_dilate = getStructuringElement(MORPH_RECT, Size(2, 4));
-    dilate(src_left, src_left, kernel_dilate);
-
-    static Mat kernel_erode2 = getStructuringElement(MORPH_RECT, Size(2, 4));
-    erode(src_left, src_left, kernel_erode2);
-
-    static Mat kernel_dilate2 = getStructuringElement(MORPH_RECT, Size(3, 6));
-    dilate(src_left, src_left, kernel_dilate2);
-
-    float alpha = 1.5;
-    int beta = 0;
-    src_left.convertTo(src_left, -1, alpha, beta);
-}
-
 bool ArmorFinder::findLightBlob(const cv::Mat &src, vector <LightBlob> &light_blobs) {
-    static Mat src_gray;
     static Mat src_bin;
-    if (src.type() == CV_8UC3) {
-        cvtColor(src, src_gray, COLOR_BGR2GRAY);
-    } else if (src.type() == CV_8UC1) {
-        src_gray = src.clone();
-    }
 
-    threshold(src_gray, src_bin, light_blob_param_.GRAY_THRESH, 255, THRESH_BINARY);
+    threshold(src, src_bin, light_blob_param_.GRAY_THRESH, 255, THRESH_BINARY);
 
     std::vector <vector<Point>> light_contours;
+    LOG_DEBUG(imshow("blobs bin", src_bin));
     findContours(src_bin, light_contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 
     for (auto &light_contour : light_contours) {
@@ -79,14 +49,4 @@ bool ArmorFinder::isValidLightContour(const vector <Point> &light_contour) {
     double cur_contour_area = contourArea(light_contour);
     return !(cur_contour_area > light_blob_param_.CONTOUR_AREA_MAX ||
              cur_contour_area < light_blob_param_.CONTOUR_AREA_MIN);
-}
-
-bool ArmorFinder::pipelineForFindLightBlob(cv::Mat &src,
-                                           std::vector<LightBlob> &light_blobs) {
-    light_blobs.clear();
-    pipelineLightBlobPreprocess(src);
-    preprocessColor(src); //腐蚀，膨胀
-    resize(src, src, Size(640, 480));
-    findLightBlob(src, light_blobs);
-    return !(light_blobs.empty());
 }

@@ -55,7 +55,7 @@ private:
     /**
      * vectors to store light blobs
      */
-    std::vector <LightBlob> light_blobs_real_;
+    std::vector<LightBlob> light_blobs;
 
     /**
      * Rects to store the found armor box position
@@ -126,11 +126,11 @@ private:
 
     /**
      * @brief searching state, it will search the entire frame to try to find a target
-     * @param src_light
+     * @param src
      * @param src_right
      * @return
      */
-    bool stateSearchingTarget(cv::Mat &src_light);
+    bool stateSearchingTarget(cv::Mat &src);
 
     /**
      * @brief tracking state, it will tracking the given area until the condition is not met
