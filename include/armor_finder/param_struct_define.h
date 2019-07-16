@@ -1,7 +1,3 @@
-//
-// Created by zhikun on 18-12-2.
-//
-
 #ifndef STEREOVISION_PARAM_DEFINE_H
 #define STEREOVISION_PARAM_DEFINE_H
 

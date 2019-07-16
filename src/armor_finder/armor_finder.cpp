@@ -13,7 +13,6 @@ ArmorFinder::ArmorFinder(Serial &u) :
         kcf_tracker_(false, true, false, false) {
     initLightParam();
     initLightCoupleParam();
-    initCameraParam();
     initArmorSeekingParam();
     initStateMachineParam();
     initTrackingParam();

@@ -1,7 +1,5 @@
-
-#include <armor_finder/armor_finder.h>
-
 #include "armor_finder/armor_finder.h"
+#include "config.h"
 
 using namespace cv;
 using namespace std;
@@ -21,52 +19,6 @@ void ArmorFinder::initArmorSeekingParam() {
     armor_seeking_param_.BORDER_IGNORE = 10;
     armor_seeking_param_.BOX_EXTRA = 5;
 }
-
-void ArmorFinder::initCameraParam() {
-    stereo_camera_param_.CAMERA_DISTANCE = 19;  // cm
-    stereo_camera_param_.FOCUS = 0.36;          // 4mm = 0.4cm
-    stereo_camera_param_.LENGTH_PER_PIXAL = 0.48 / 640;
-
-}
-
-bool ArmorFinder::matchLightBlobVector(std::vector <LightBlob> &light_blobs, vector <cv::Rect2d> &armor_boxes) {
-    armor_boxes.clear();
-    if (light_blobs.size() < 2)
-        return false;
-    long light_index_left = -1;
-    long light_index_right = -1;
-
-    sort(light_blobs.begin(), light_blobs.end(),
-         [](LightBlob a, LightBlob b) -> bool { return a.rect.center.y > b.rect.center.y; });
-
-    for (long i = 0; i < light_blobs.size() - 1; ++i) {
-        for (long j = i + 1; j < light_blobs.size(); ++j) {
-            if (!isCoupleLight(light_blobs.at(i), light_blobs.at(j))) {
-                continue;
-            }
-            light_index_left = i;
-            light_index_right = j;
-            Rect2d rect_left = light_blobs.at(static_cast<unsigned long>(light_index_left)).rect.boundingRect();
-            Rect2d rect_right = light_blobs.at(static_cast<unsigned long>(light_index_right)).rect.boundingRect();
-            double min_x, min_y, max_x, max_y;
-            min_x = min(rect_left.x, rect_right.x) - armor_seeking_param_.BOX_EXTRA;
-            max_x = max(rect_left.x + rect_left.width, rect_right.x + rect_right.width) +
-                    armor_seeking_param_.BOX_EXTRA;
-            min_y = min(rect_left.y, rect_right.y) - armor_seeking_param_.BOX_EXTRA;
-            max_y = max(rect_left.y + rect_left.height, rect_right.y + rect_right.height) +
-                    armor_seeking_param_.BOX_EXTRA;
-            if (min_x < 0 || max_x > 640 || min_y < 0 || max_y > 480) {
-                continue;
-            }
-            armor_boxes.emplace_back(Rect2d(min_x, min_y, max_x - min_x, max_y - min_y));
-        }
-
-    }
-    return light_index_left + light_index_right != -2;
-
-
-}
-
 
 double leastSquare(const LightBlob &light_blob) {
     double x_average = 0, y_average = 0, x_squa_average = 0, x_y_average = 0;
@@ -88,26 +40,19 @@ bool newAngelJudge(const LightBlob &light_blob_i, const LightBlob &light_blob_j)
     return abs(atan(leastSquare(light_blob_i)) - atan(leastSquare(light_blob_j))) < 0.2;
 }
 
-bool oldAngelJudge(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
-//    Point2f side = light_blob_i.rect.center - light_blob_j.rect.center;
-//    Point2f rect;
-//    if (light_blob_i.rect.size.width >= light_blob_i.rect.size.height)
-//        rect = Point2f(static_cast<float>(10 * cos(light_blob_i.rect.angle * 3.1415926 / 180)),
-//                       static_cast<float>(10 * sin(light_blob_i.rect.angle * 3.1415926 / 180)));
-//    else
-//        rect = Point2f(static_cast<float>(10 * cos((light_blob_i.rect.angle + 90) * 3.1415926 / 180)),
-//                       static_cast<float>(10 * sin((light_blob_i.rect.angle + 90) * 3.1415926 / 180)));
-//    return abs(side.dot(rect) * side.dot(rect) / (side.dot(side) * rect.dot(rect))) < 0.03;
-    float angle_i = light_blob_i.rect.size.width > light_blob_i.rect.size.height ? light_blob_i.rect.angle :
-                    light_blob_i.rect.angle - 90;
-    float angle_j = light_blob_j.rect.size.width > light_blob_j.rect.size.height ? light_blob_j.rect.angle :
-                    light_blob_j.rect.angle - 90;
+double ArmorFinder::getBlobAngel(const LightBlob &blob) {
+    return blob.rect.size.width > blob.rect.size.height ? blob.rect.angle :
+           blob.rect.angle - 90;
+}
+
+bool angelJudge(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
+    float angle_i = ArmorFinder::getBlobAngel(light_blob_i);
+    float angle_j = ArmorFinder::getBlobAngel(light_blob_j);
     return abs(angle_i - angle_j) < 10;
 }
 
 bool heightJudge(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
     Point2f centers = light_blob_i.rect.center - light_blob_j.rect.center;
-//    return abs(centers.y) / light_blob_i.length <= 2;
     return abs(centers.y) < 30;
 }
 
@@ -124,9 +69,46 @@ bool lengthRatioJudge(const LightBlob &light_blob_i, const LightBlob &light_blob
             && light_blob_i.length / light_blob_j.length > 0.5);
 }
 
+bool isInVision(Rect rect) {
+    Rect vision(0, 0, SRC_WIDTH, SRC_HEIGHT);
+    return vision.contains(rect.br()) && vision.contains(rect.tl());
+}
+
+bool ArmorFinder::matchLightBlobVector(std::vector <LightBlob> &light_blobs, vector <cv::Rect2d> &armor_boxes) {
+    armor_boxes.clear();
+    if (light_blobs.size() < 2)
+        return false;
+    long light_index_left = -1;
+    long light_index_right = -1;
+
+    sort(light_blobs.begin(), light_blobs.end(),
+         [](LightBlob a, LightBlob b) -> bool { return a.rect.center.y > b.rect.center.y; });
+
+    for (long i = 0; i < light_blobs.size() - 1; ++i) {
+        for (long j = i + 1; j < light_blobs.size(); ++j) {
+            if (!isCoupleLight(light_blobs.at(i), light_blobs.at(j))) {
+                continue;
+            }
+            light_index_left = i;
+            light_index_right = j;
+            Rect2d rect_left = light_blobs.at(static_cast<unsigned long>(light_index_left)).rect.boundingRect();
+            Rect2d rect_right = light_blobs.at(static_cast<unsigned long>(light_index_right)).rect.boundingRect();
+            if (!isInVision(rect_left) || !isInVision(rect_right))continue;
+
+            Point2d tl(min(rect_left.x, rect_right.x), min(rect_left.y, rect_right.y));
+            Point2d br(max(rect_left.br().x, rect_right.br().x), max(rect_left.br().y, rect_right.br().y));
+            armor_boxes.emplace_back(Rect2d(tl, br));
+        }
+
+    }
+    return light_index_left + light_index_right != -2;
+
+
+}
+
 bool ArmorFinder::isCoupleLight(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
     return lengthRatioJudge(light_blob_i, light_blob_j) &&
            lengthJudge(light_blob_i, light_blob_j) &&
            heightJudge(light_blob_i, light_blob_j) &&
-           oldAngelJudge(light_blob_i, light_blob_j);
+           angelJudge(light_blob_i, light_blob_j);
 }

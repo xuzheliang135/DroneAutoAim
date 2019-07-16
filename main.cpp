@@ -9,18 +9,6 @@
 #include "armor_finder/constant.h"
 #include "config.h"
 
-#include<sys/time.h>
-
-#define GET_TIME(before, after) ((after.tv_sec-before.tv_sec)*1000000+(after.tv_usec-before.tv_usec))
-#define TIME_IT(x, name) x;
-//#define TIME_IT(x, name){\
-//struct timeval before{},after{};\
-//gettimeofday(&before, nullptr);\
-//x;\
-//gettimeofday(&after, nullptr);\
-//cout<<name<<": "<<GET_TIME(before,after)<<endl;\
-//}
-
 using namespace cv;
 using std::cin;
 using std::cout;
@@ -39,7 +27,6 @@ int main() {
         VideoCapture video(0);
 
         Mat src;
-        int assemblePoint = 0;
         ArmorFinder armor_finder(uart);
         for (int i = 0; i < 5; ++i) {
             video.read(src);
@@ -50,7 +37,7 @@ int main() {
             ok = video.read(src);
             if (!ok)continue;
             cvtColor(src, src, COLOR_RGB2GRAY);
-            imshow("src", src);
+            LOG_DEBUG(imshow("src", src));
             armor_finder.run(src);
             waitKey(1);
         }

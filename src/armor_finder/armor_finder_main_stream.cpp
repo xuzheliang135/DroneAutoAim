@@ -23,7 +23,7 @@ int ArmorFinder::run(cv::Mat &src) {
                 total_contour_area_left_ = countNonZero(roi_left);
 
                 trackInit(kcf_tracker_, src, armor_box_);
-                transferState(TRACKING_TARGET);
+//                transferState(TRACKING_TARGET);
                 LOG_INFO(std::cout << "dive into tracking" << std::endl);
             }
             break;

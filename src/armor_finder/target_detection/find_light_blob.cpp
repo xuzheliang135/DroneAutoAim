@@ -8,7 +8,7 @@ using std::endl;
 void ArmorFinder::initLightParam() {
     light_blob_param_.PREPROCESS_SUBSTRACT_FACTOR = 150;
     light_blob_param_.PREPROCESS_MULTIPLY_FACTOR = 3.5;
-    light_blob_param_.GRAY_THRESH = 80;
+    light_blob_param_.GRAY_THRESH = 140;
     light_blob_param_.CONTOUR_AREA_MIN = 1;
     light_blob_param_.CONTOUR_AREA_MAX = 3000;
     light_blob_param_.CONTOUR_LENGTH_MIN = 3;
@@ -19,12 +19,12 @@ void ArmorFinder::initLightParam() {
 }
 
 
-void drawRotatedRectangle(Mat &img, const RotatedRect &rect, const Scalar &s) {
-    Point2f points[4];
-    rect.points(points);
-    for (int i = 0; i < 3; i++)line(img, points[i], points[i + 1], s);
-    line(img, points[3], points[0], s);
-}
+//void drawRotatedRectangle(Mat &img, const RotatedRect &rect, const Scalar &s) {
+//    Point2f points[4];
+//    rect.points(points);
+//    for (int i = 0; i < 3; i++)line(img, points[i], points[i + 1], s);
+//    line(img, points[3], points[0], s);
+//}
 
 bool ArmorFinder::findLightBlob(const cv::Mat &src, vector <LightBlob> &light_blobs) {
     static Mat src_bin;
@@ -41,6 +41,7 @@ bool ArmorFinder::findLightBlob(const cv::Mat &src, vector <LightBlob> &light_bl
         }
         light_blobs.emplace_back(light_contour);
     }
+
     return light_blobs.size() >= 2;
 }
 

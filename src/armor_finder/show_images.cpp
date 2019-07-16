@@ -53,8 +53,8 @@ void ArmorFinder::showArmorBox(std::string windows_name,
     imshow(windows_name, image2show_left);
 }
 
-void ArmorFinder::showContours(std::string windows_name,
-                               const cv::Mat &src, const std::vector<LightBlob> &light_blobs_left) {
+void ArmorFinder::showBlobs(std::string windows_name,
+                            const cv::Mat &src, const std::vector<LightBlob> &light_blobs) {
     static Mat image2show_left;
 
     if (src.type() == CV_8UC1) // 黑白图像
@@ -64,9 +64,8 @@ void ArmorFinder::showContours(std::string windows_name,
     {
         image2show_left = src.clone();
     }
-
-    for (const auto &light_blob:light_blobs_left) {
-        rectangle(image2show_left, light_blob.rect.boundingRect(), Scalar(255, 0, 0), 3);
+    for (const auto &light_blob:light_blobs) {
+        rectangle(image2show_left, light_blob.rect.boundingRect(), Scalar(255, 0, 0), 1);
     }
     imshow(windows_name, image2show_left);
 

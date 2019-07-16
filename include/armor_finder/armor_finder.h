@@ -110,8 +110,6 @@ private:
 
     void initLightCoupleParam();
 
-    void initCameraParam();
-
     void initArmorSeekingParam();
 
     void initStateMachineParam();
@@ -194,6 +192,8 @@ public:
      */
     bool sendTargetByUart(float x, float y, float z);
 
+    static double getBlobAngel(const LightBlob &blob);
+
 private:
     /**
      * @name    isValidLightContour()
@@ -223,8 +223,8 @@ public:
      */
     void showImage(std::string windows_name, const cv::Mat &src);
 
-    void showContours(std::string windows_name,
-                      const cv::Mat &src, const std::vector<LightBlob> &light_blobs_left);
+    void showBlobs(std::string windows_name,
+                   const cv::Mat &src, const std::vector<LightBlob> &light_blobs);
 
 
     void showArmorBox(std::string windows_name, const cv::Mat &src_left, const cv::Rect2d &armor_box_left);
