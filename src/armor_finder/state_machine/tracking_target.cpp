@@ -7,18 +7,16 @@ using namespace cv;
 
 void ArmorFinder::initTrackingParam() {
     track_param_.THRESHOLD_FOR_COUNT_NON_ZERO = 200;
-    track_param_.TRANSFER_RATIO_OF_TRACKING_AREA_NONZERO = 0.5;
+    track_param_.TRANSFER_RATIO_OF_TRACKING_AREA_NONZERO = 0.4;
 
 }
 
 bool ArmorFinder::stateTrackingTarget(cv::Mat &src) {
-    cv::Mat roi = src(armor_box_);
+    cv::Mat roi = src(armor_box_).clone();
     /********************** tracking ***********************************************/
     track(kcf_tracker_, src, armor_box_);
-    if ((Rect2d(0, 0, 640, 480) & armor_box_).area() < armor_box_.area()) // avoid box touching edges
-    {
-        return false;
-    }
+    if ((Rect2d(0, 0, 640, 480) & armor_box_).area() < armor_box_.area())
+        return false;// avoid box touching edges
 
     threshold(roi, roi, track_param_.THRESHOLD_FOR_COUNT_NON_ZERO, 255, THRESH_BINARY);
 

@@ -33,7 +33,7 @@ bool ArmorFinder::stateSearchingTarget(cv::Mat &src) {
         Point2d p1(center.x + 10, center.y + 10 * k), p2(center.x - 10, center.y - 10 * k);
         line(show, p1, p2, Scalar(0, 255, 0), 1);
     }
-    imshow("light_blobs_angel", show);
+    LOG_DEBUG(imshow("light_blobs_angel", show));
     LOG_DEBUG(showBlobs("light_blobs", src, light_blobs));
     /*************************** match light blobs***********************************/
     matchLightBlobVector(light_blobs, armor_boxes_);

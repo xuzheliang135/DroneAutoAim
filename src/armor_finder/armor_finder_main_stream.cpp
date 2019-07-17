@@ -1,8 +1,10 @@
 
 #include "armor_finder/armor_finder.h"
 #include "config.h"
+
 using namespace cv;
 
+int unfoundFrames = 0;
 
 int ArmorFinder::run(cv::Mat &src) {
     switch (cur_state_) {
@@ -18,21 +20,24 @@ int ArmorFinder::run(cv::Mat &src) {
                     target_found_frame_cnt = 0;
                     break;
                 }
-                Mat roi_left = src.clone()(armor_box_);
+                Mat roi_left = src(armor_box_).clone();
                 threshold(roi_left, roi_left, track_param_.THRESHOLD_FOR_COUNT_NON_ZERO, 255, THRESH_BINARY);
                 total_contour_area_left_ = countNonZero(roi_left);
 
                 trackInit(kcf_tracker_, src, armor_box_);
-//                transferState(TRACKING_TARGET);
+                transferState(TRACKING_TARGET);
                 LOG_INFO(std::cout << "dive into tracking" << std::endl);
             }
             break;
 
         case TRACKING_TARGET:
             if (!stateTrackingTarget(src)) {
-                LOG_INFO(std::cout << "jump out tracking" << std::endl);
-                transferState(SEARCHING_TARGET);
-            }
+                if (unfoundFrames++ > 5) {
+                    unfoundFrames = 0;
+                    LOG_INFO(std::cout << "jump out tracking" << std::endl);
+                    transferState(SEARCHING_TARGET);
+                }
+            } else unfoundFrames = 0;
             break;
         case STAND_BY:
             transferState(SEARCHING_TARGET);

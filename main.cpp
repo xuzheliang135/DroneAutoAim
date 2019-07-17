@@ -25,6 +25,7 @@ int main() {
         Serial uart(115200);
 
         VideoCapture video(0);
+//        video.set(6, CV_FOURCC('M','J','P','G'));
 
         Mat src;
         ArmorFinder armor_finder(uart);
