@@ -21,7 +21,8 @@ void drawRotatedRectangle(Mat &img, const RotatedRect &rect, const Scalar &s) {
 bool ArmorFinder::stateSearchingTarget(cv::Mat &src) {
 
     /************************** find light blobs **********************************************/
-    light_blobs.clear();
+    vector<LightBlob> light_blobs;
+    vector<cv::Rect2d> armor_boxes;
 //    erodeAndDilate(src); //腐蚀，膨胀
     findLightBlob(src, light_blobs);
     Mat show;
@@ -36,16 +37,16 @@ bool ArmorFinder::stateSearchingTarget(cv::Mat &src) {
     LOG_DEBUG(imshow("light_blobs_angel", show));
     LOG_DEBUG(showBlobs("light_blobs", src, light_blobs));
     /*************************** match light blobs***********************************/
-    matchLightBlobVector(light_blobs, armor_boxes_);
+    matchLightBlobVector(light_blobs, armor_boxes);
 
-    LOG_DEBUG(showArmorBoxVector("armor boxes", src, armor_boxes_));
-    if (!armor_boxes_.empty())armor_box_ = armor_boxes_[0];
+    LOG_DEBUG(showArmorBoxVector("armor boxes", src, armor_boxes));
+    if (!armor_boxes.empty())armor_box_ = armor_boxes[0];
     else return false;
 
     /********************** convert to 3d coordinate *********************************/
     armor_space_position_.x =
-            (armor_box_.x + armor_box_.width / 2 - 640.0 / 2);
-    armor_space_position_.y = -(armor_box_.y + armor_box_.height / 2 - 480.0 / 2);
+            armor_box_.x + armor_box_.width / 2 - SRC_WIDTH / 2;
+    armor_space_position_.y = -(armor_box_.y + armor_box_.height / 2 - SRC_HEIGHT / 2);
     armor_space_position_.z = 0.0;
     return sendTargetByUart(
             static_cast<float>(armor_space_position_.x),

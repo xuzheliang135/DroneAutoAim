@@ -48,14 +48,6 @@ struct LightCoupleParam {
     float TWIN_CENTER_POSITION_DIFF;
 };
 
-struct StereoCameraPara {
-    double CAMERA_DISTANCE;
-    double FOCUS;
-    double LENGTH_PER_PIXAL;
-    int WIDTH, HEIGHT;
-    double POSITION_INRTIA_RATIO;
-};
-
 struct ArmorSeekingParam {
     int BORDER_IGNORE;
     int BOX_EXTRA;

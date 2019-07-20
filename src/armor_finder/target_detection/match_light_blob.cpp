@@ -15,27 +15,28 @@ void ArmorFinder::initLightCoupleParam() {
     light_couple_param_.TWIN_CENTER_POSITION_DIFF = 100;
 }
 
-void ArmorFinder::initArmorSeekingParam() {
-    armor_seeking_param_.BORDER_IGNORE = 10;
-    armor_seeking_param_.BOX_EXTRA = 10;
-}
-
 double ArmorFinder::getBlobAngel(const LightBlob &blob) {
-    return blob.rect.size.width > blob.rect.size.height ? blob.rect.angle :
-           blob.rect.angle - 90;
+    float angel = blob.rect.size.width > blob.rect.size.height ? blob.rect.angle :
+                  blob.rect.angle - 90;
+    angel = angel > 180 ? angel - 180 : angel;
+    angel = angel < 0 ? angel + 180 : angel;
+    return angel;
+
 }
 
 bool angelJudge(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
     float angle_i = ArmorFinder::getBlobAngel(light_blob_i);
     float angle_j = ArmorFinder::getBlobAngel(light_blob_j);
-    return abs(angle_i - angle_j) < 10;
+
+    return angle_i > 45 && angle_i < 135 && abs(angle_i - angle_j) < 10;
 }
-//bool angelJudge(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
-//    double angle_i = ArmorFinder::getBlobAngel(light_blob_i);
-//    double angle_j = ArmorFinder::getBlobAngel(light_blob_j);
-//    double res=abs(tan(angle_i+3.1415926/180)*tan(angle_j+3.1415926/180)+1);
-//    return 0.18<res&&res<0.4;
-//}
+
+bool angelJudgeForBase(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
+    double angle_i = ArmorFinder::getBlobAngel(light_blob_i);
+    double angle_j = ArmorFinder::getBlobAngel(light_blob_j);
+    double res = abs(tan(angle_i + 3.1415926 / 180) * tan(angle_j + 3.1415926 / 180) + 1);
+    return 0.18 < res && res < 0.4;
+}
 
 bool heightJudge(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
     Point2f centers = light_blob_i.rect.center - light_blob_j.rect.center;
@@ -55,13 +56,12 @@ bool lengthRatioJudge(const LightBlob &light_blob_i, const LightBlob &light_blob
             && light_blob_i.length / light_blob_j.length > 0.5);
 }
 
-bool isInVision(Rect rect) {
+bool ArmorFinder::isInVision(const Rect &rect) {
     Rect vision(0, 0, SRC_WIDTH, SRC_HEIGHT);
     return vision.contains(rect.br()) && vision.contains(rect.tl());
 }
 
-bool ArmorFinder::matchLightBlobVector(std::vector <LightBlob> &light_blobs, vector <cv::Rect2d> &armor_boxes) {
-    armor_boxes.clear();
+bool ArmorFinder::matchLightBlobVector(std::vector<LightBlob> &light_blobs, vector<cv::Rect2d> &armor_boxes) {
     if (light_blobs.size() < 2)
         return false;
     long light_index_left = -1;
@@ -83,10 +83,10 @@ bool ArmorFinder::matchLightBlobVector(std::vector <LightBlob> &light_blobs, vec
 
             Point2d tl(min(rect_left.x, rect_right.x), min(rect_left.y, rect_right.y));
             Point2d br(max(rect_left.br().x, rect_right.br().x), max(rect_left.br().y, rect_right.br().y));
-            tl.x -= armor_seeking_param_.BOX_EXTRA;
-            tl.y -= armor_seeking_param_.BOX_EXTRA;
-            br.x += armor_seeking_param_.BOX_EXTRA;
-            br.y += armor_seeking_param_.BOX_EXTRA;
+            tl.x -= 10;
+            tl.y -= 10;
+            br.x += 10;
+            br.y += 10;
             armor_boxes.emplace_back(Rect2d(tl, br));
         }
 
@@ -96,15 +96,16 @@ bool ArmorFinder::matchLightBlobVector(std::vector <LightBlob> &light_blobs, vec
 
 }
 
-//bool ArmorFinder::isCoupleLight(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
-//    return lengthRatioJudge(light_blob_i, light_blob_j) &&
-//           lengthJudge(light_blob_i, light_blob_j) &&
-//           heightJudge(light_blob_i, light_blob_j) &&
-//           angelJudge(light_blob_i, light_blob_j);
-//}
 bool ArmorFinder::isCoupleLight(const LightBlob &light_blob_i, const LightBlob &light_blob_j) {
-    return lengthRatioJudge(light_blob_i, light_blob_j) &&
-           lengthJudge(light_blob_i, light_blob_j) &&
-           heightJudge(light_blob_i, light_blob_j) &&
-           angelJudge(light_blob_i, light_blob_j);
+    if (target == INFANTRY)
+        return lengthRatioJudge(light_blob_i, light_blob_j) &&
+               lengthJudge(light_blob_i, light_blob_j) &&
+               heightJudge(light_blob_i, light_blob_j) &&
+               angelJudge(light_blob_i, light_blob_j);
+    else if (target == BASE)
+        return lengthRatioJudge(light_blob_i, light_blob_j) &&
+               lengthJudge(light_blob_i, light_blob_j) &&
+               heightJudge(light_blob_i, light_blob_j) &&
+               angelJudgeForBase(light_blob_i, light_blob_j);
+    else return false;
 }

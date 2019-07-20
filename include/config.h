@@ -4,10 +4,14 @@
 
 #ifndef SJTU_RM2019_WINTER_VERSION_CONFIG_H
 #define SJTU_RM2019_WINTER_VERSION_CONFIG_H
-#define ASSEMBLE_DEPTH 3
 #define DEBUG
+//#define INFO
 #define Windows
 //#define Linux
+#define ENEMY_BLUE 1
+#define ENEMY_RED 2
+#define INFANTRY 3
+#define BASE 4
 
 #ifdef DEBUG
 #define LOG_DEBUG(x) x

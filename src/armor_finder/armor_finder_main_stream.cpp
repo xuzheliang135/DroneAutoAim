@@ -32,7 +32,7 @@ int ArmorFinder::run(cv::Mat &src) {
 
         case TRACKING_TARGET:
             if (!stateTrackingTarget(src)) {
-                if (unfoundFrames++ > 5) {
+                if (unfoundFrames++ > 2) {
                     unfoundFrames = 0;
                     LOG_INFO(std::cout << "jump out tracking" << std::endl);
                     transferState(SEARCHING_TARGET);

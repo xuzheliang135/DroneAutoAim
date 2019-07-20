@@ -12,9 +12,10 @@ void ArmorFinder::initTrackingParam() {
 }
 
 bool ArmorFinder::stateTrackingTarget(cv::Mat &src) {
+    if (isInVision(armor_box_))return false;//候选框在图像之外时返回false
     cv::Mat roi = src(armor_box_).clone();
     /********************** tracking ***********************************************/
-    track(kcf_tracker_, src, armor_box_);
+    armor_box_ = kcf_tracker_.update(src);
     if ((Rect2d(0, 0, 640, 480) & armor_box_).area() < armor_box_.area())
         return false;// avoid box touching edges
 

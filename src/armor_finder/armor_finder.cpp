@@ -7,13 +7,13 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-
-ArmorFinder::ArmorFinder(Serial &u) :
+ArmorFinder::ArmorFinder(Serial &u, int &target, int &enemyColor) :
         uart_(u),
+        target(target),
+        enemyColor(enemyColor),
         kcf_tracker_(false, true, false, false) {
     initLightParam();
     initLightCoupleParam();
-    initArmorSeekingParam();
     initStateMachineParam();
     initTrackingParam();
 

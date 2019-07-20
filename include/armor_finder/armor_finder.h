@@ -28,7 +28,7 @@ using std::vector;
  */
 class ArmorFinder {
 public:
-    explicit ArmorFinder(Serial &u);
+    explicit ArmorFinder(Serial &u, int &target, int &enemyColor);
 
     ~ArmorFinder() = default;
 
@@ -47,25 +47,15 @@ private:
      */
     LightBlobParam light_blob_param_{};
     LightCoupleParam light_couple_param_{};
-    StereoCameraPara stereo_camera_param_{};
-    ArmorSeekingParam armor_seeking_param_{};
     StateMachineParam state_machine_param_{};
     TrackingParam track_param_{};
-
-    /**
-     * vectors to store light blobs
-     */
-    std::vector<LightBlob> light_blobs;
+    int target;
+    int enemyColor;
 
     /**
      * Rects to store the found armor box position
      */
     cv::Rect2d armor_box_;
-
-    /**
-     * Rects list to store all the possible armor box position
-     */
-    std::vector <cv::Rect2d> armor_boxes_;
 
     /**
      * a counter for changing state from searching to tracking
@@ -138,30 +128,6 @@ private:
      */
     bool stateTrackingTarget(cv::Mat &src);
 
-    /**
-     * @brief find light blobs from the images.
-     * @param src :image
-     * @param src_right :image
-     * @param light_blobs_real
-     * @param light_blobs_real_right
-     * @return
-     */
-    bool pipelineForFindLightBlob(cv::Mat &src, std::vector<LightBlob> &light_blobs_real);
-
-    /**
-     * @brief process for find light blobs, enlarge the difference between the dark and light, to highlight the light blob
-     * @param InOutput
-     */
-    void pipelineLightBlobPreprocess(cv::Mat &InOutput);
-
-    /**
-     * @brief control the message stream to lower computer in searching state, some large jump will be skipped
-     * @param x
-     * @param y
-     * @return
-     */
-    bool targetSearchPositionStreamControlWillSkip(double x, double y);
-
 public:
     /**
      * @name    findLightBlob()
@@ -193,6 +159,8 @@ public:
     bool sendTargetByUart(float x, float y, float z);
 
     static double getBlobAngel(const LightBlob &blob);
+
+    static bool isInVision(const cv::Rect &rect);
 
 private:
     /**
@@ -239,15 +207,6 @@ public:
      * @param armor_box
      */
     void trackInit(KCFTracker &kcf_tracker, cv::Mat &src, cv::Rect2d &armor_box);
-
-    /**
-     * @brief the tracker will give where the area is in given image
-     * @param kcf_tracker
-     * @param src
-     * @param armor_box
-     * @return
-     */
-    bool track(KCFTracker &kcf_tracker, cv::Mat &src, cv::Rect2d &armor_box);
 
 };
 
